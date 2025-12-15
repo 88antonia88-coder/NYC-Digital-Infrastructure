@@ -62,13 +62,22 @@
   <button id="reset-view-btn" class="reset-view-btn" style="display: none;">
     Reset View
   </button>
+  <div style="position: relative;">
+    <button id="download-btn" class="download-btn">
+      Download Data
+    </button>
+    <div id="download-menu" class="download-menu">
+      <button class="download-option" data-type="geojson">GeoJSON</button>
+      <button class="download-option" data-type="csv">CSV (Timeline)</button>
+    </div>
+  </div>
 </div>
 
 <!-- Scroll track for years and events -->
 <div id="scroll-track"></div>
 
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.js"></script>
-<script src="app.js?v=1734389999"></script>
+<script src="app.js?v=1734390150"></script>
 
 </body>
 </html>

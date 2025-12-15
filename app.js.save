@@ -31,7 +31,7 @@ map.on('load', () => {
   // Add the GeoJSON source
   map.addSource('digitalInfra', {
     type: 'geojson',
-    data: 'all_digInf.geojson'
+    data: 'all_diginf.geojson'
   });
 
   // Add buffer zones layer first (initially hidden, renders behind everything)
@@ -654,58 +654,4 @@ document.getElementById('reset-view-btn').addEventListener('click', () => {
     essential: true
   });
 });
-
-// --- DOWNLOAD FUNCTIONALITY ---
-const downloadBtn = document.getElementById('download-btn');
-const downloadMenu = document.getElementById('download-menu');
-const downloadOptions = document.querySelectorAll('.download-option');
-
-// Toggle dropdown menu
-downloadBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  downloadMenu.classList.toggle('show');
-});
-
-// Close menu when clicking outside
-document.addEventListener('click', (e) => {
-  if (!downloadBtn.contains(e.target) && !downloadMenu.contains(e.target)) {
-    downloadMenu.classList.remove('show');
-  }
-});
-
-// Handle download options
-downloadOptions.forEach(option => {
-  option.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const type = option.dataset.type;
-
-    if (type === 'geojson') {
-      downloadGeoJSON();
-    } else if (type === 'csv') {
-      downloadCSV();
-    }
-
-    downloadMenu.classList.remove('show');
-  });
-});
-
-function downloadGeoJSON() {
-  // Create a link element and trigger download
-  const link = document.createElement('a');
-  link.href = 'all_digInf.geojson';
-  link.download = 'nyc_digital_infrastructure.geojson';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
-function downloadCSV() {
-  // Create a link element and trigger download
-  const link = document.createElement('a');
-  link.href = 'timeline.csv';
-  link.download = 'nyc_digital_infrastructure_timeline.csv';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
 
