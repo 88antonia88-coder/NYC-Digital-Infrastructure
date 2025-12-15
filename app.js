@@ -34,56 +34,7 @@ map.on('load', () => {
     data: 'all_diginf.geojson'
   });
 
-  // Add a layer (all points)
-  map.addLayer({
-    id: 'infra-points',
-    type: 'circle',
-    source: 'digitalInfra',
-    paint: {
-      'circle-radius': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        10, 2,
-        14, 4,
-        18, 7
-      ],
-      "circle-color": [
-        "match",
-        ["get", "System"],
-        "Wifi Hotspots", "#434db9",
-        "WiFi Hotspot", "#434db9",
-        "LinkNYC", "#3e9cfe",
-        "Citi Bike", "#48f882",
-        "OMNY", "#e2dc38",
-        "TAPP", "#ef5911",
-        "#360505ff"
-      ],
-      "circle-opacity": 0,
-      "circle-stroke-width": [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        10, 0.5,
-        14, 1,
-        18, 2
-      ],
-      "circle-stroke-color": [
-        "match",
-        ["get", "System"],
-        "Wifi Hotspots", "#5a62d9",
-        "WiFi Hotspot", "#5a62d9",
-        "LinkNYC", "#5eb5ff",
-        "Citi Bike", "#6affaa",
-        "OMNY", "#f0ec68",
-        "TAPP", "#ff7a41",
-        "#2f2f2f"
-      ],
-      "circle-stroke-opacity": 0.9
-    }
-  });
-
-  // Add buffer zones layer (initially hidden)
+  // Add buffer zones layer first (initially hidden, renders behind everything)
   map.addLayer({
     id: 'buffer-zones',
     type: 'circle',
@@ -106,7 +57,9 @@ map.on('load', () => {
         "Citi Bike", "#48f882",
         "OMNY", "#e2dc38",
         "TAPP", "#ef5911",
-        "CCTV Camera", "#310202ff"
+        "CCTV Camera", "#8b0000",
+        "CCTV Surveillance", "#8b0000",
+        "#0f0f0f"
       ],
       'circle-opacity': 0.08,
       'circle-stroke-width': 1.5,
@@ -119,32 +72,123 @@ map.on('load', () => {
         "Citi Bike", "#6affaa",
         "OMNY", "#f0ec68",
         "TAPP", "#ff7a41",
-        "#3d0505ff"
+        "CCTV Camera", "#b30000",
+        "CCTV Surveillance", "#b30000",
+        "#2f2f2f"
       ],
       'circle-stroke-opacity': 0.35
     },
     layout: {
       visibility: 'none'
     }
-  }, 'infra-points'); // Add below points layer
+  });
+
+  // Add surveillance cameras layer (behind other infra points)
+  map.addLayer({
+    id: 'surveillance-points',
+    type: 'circle',
+    source: 'digitalInfra',
+    filter: [
+      'any',
+      ['==', ['get', 'System'], 'CCTV Camera'],
+      ['==', ['get', 'System'], 'CCTV Surveillance']
+    ],
+    paint: {
+      'circle-radius': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        10, 1.5,
+        14, 3,
+        18, 5
+      ],
+      "circle-color": "#8b0000",
+      "circle-opacity": 0.9,
+      "circle-stroke-width": [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        10, 0.5,
+        14, 1,
+        18, 1.5
+      ],
+      "circle-stroke-color": "#b30000",
+      "circle-stroke-opacity": 0.9
+    }
+  });
+
+  // Add other infrastructure points layer (on top)
+  map.addLayer({
+    id: 'infra-points',
+    type: 'circle',
+    source: 'digitalInfra',
+    filter: [
+      'all',
+      ['!=', ['get', 'System'], 'CCTV Camera'],
+      ['!=', ['get', 'System'], 'CCTV Surveillance']
+    ],
+    paint: {
+      'circle-radius': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        10, 1.5,
+        14, 3,
+        18, 5
+      ],
+      "circle-color": [
+        "match",
+        ["get", "System"],
+        "Wifi Hotspots", "#434db9",
+        "WiFi Hotspot", "#434db9",
+        "LinkNYC", "#3e9cfe",
+        "Citi Bike", "#48f882",
+        "OMNY", "#e2dc38",
+        "TAPP", "#ef5911",
+        "#0f0f0f"
+      ],
+      "circle-opacity": 0.8,
+      "circle-stroke-width": [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        10, 0.5,
+        14, 1,
+        18, 1.5
+      ],
+      "circle-stroke-color": [
+        "match",
+        ["get", "System"],
+        "Wifi Hotspots", "#5a62d9",
+        "WiFi Hotspot", "#5a62d9",
+        "LinkNYC", "#5eb5ff",
+        "Citi Bike", "#6affaa",
+        "OMNY", "#f0ec68",
+        "TAPP", "#ff7a41",
+        "#2f2f2f"
+      ],
+      "circle-stroke-opacity": 0.9
+    }
+  });
 
   // Start with no points visible
   map.setFilter('infra-points', ['<=', ['to-number', ['get', 'year']], 0]);
+  map.setFilter('surveillance-points', ['<=', ['to-number', ['get', 'year']], 0]);
 
-  // Change cursor to pointer when hovering over points
-  map.on('mouseenter', 'infra-points', (e) => {
+  // Change cursor to pointer when hovering over points (both layers)
+  const handlePointHover = (e) => {
     map.getCanvas().style.cursor = 'pointer';
-    
+
     const feature = e.features[0];
     const coordinates = feature.geometry.coordinates.slice();
     const properties = feature.properties;
-    
+
     let tooltipHTML = `
       <div style="font-family: 'Urbanist', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 5px; color: white;">
         ${properties.System || 'Unknown System'}
       </div>
     `;
-    
+
     if (properties['Station Name']) {
       tooltipHTML += `
         <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: rgba(255, 255, 255, 0.8); margin-bottom: 3px;">
@@ -152,7 +196,7 @@ map.on('load', () => {
         </div>
       `;
     }
-    
+
     if (properties.Type) {
       tooltipHTML += `
         <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 3px;">
@@ -160,26 +204,33 @@ map.on('load', () => {
         </div>
       `;
     }
-    
-    if (properties.year) {
+
+    // Only show year if NOT a CCTV camera
+    const isCCTV = properties.System === 'CCTV Camera' || properties.System === 'CCTV Surveillance';
+    if (properties.year && !isCCTV) {
       tooltipHTML += `
         <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: rgba(255, 255, 255, 0.6);">
           Year: ${properties.year}
         </div>
       `;
     }
-    
+
     while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
       coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
     }
-    
-    popup.setLngLat(coordinates).setHTML(tooltipHTML).addTo(map);
-  });
 
-  map.on('mouseleave', 'infra-points', () => {
+    popup.setLngLat(coordinates).setHTML(tooltipHTML).addTo(map);
+  };
+
+  const handlePointLeave = () => {
     map.getCanvas().style.cursor = '';
     popup.remove();
-  });
+  };
+
+  map.on('mouseenter', 'infra-points', handlePointHover);
+  map.on('mouseleave', 'infra-points', handlePointLeave);
+  map.on('mouseenter', 'surveillance-points', handlePointHover);
+  map.on('mouseleave', 'surveillance-points', handlePointLeave);
 
   updateYearDisplay(2000);
 });
@@ -351,10 +402,14 @@ function createYearSections() {
 }
 
 function updateYearDisplay(currentYear) {
-  // Only update if the map layer exists (map has finished loading)
+  // Only update if the map layers exist (map has finished loading)
   if (map.getLayer('infra-points')) {
     map.setFilter("infra-points", ["<=", ['to-number', ["get", "year"]], currentYear]);
     map.setPaintProperty('infra-points', 'circle-opacity', 0.8);
+  }
+  if (map.getLayer('surveillance-points')) {
+    map.setFilter("surveillance-points", ["<=", ['to-number', ["get", "year"]], currentYear]);
+    map.setPaintProperty('surveillance-points', 'circle-opacity', 0.8);
   }
 }
 
@@ -391,6 +446,8 @@ function switchToExplorationView() {
   // Remove year filter - show all points
   map.setFilter('infra-points', null);
   map.setPaintProperty('infra-points', 'circle-opacity', 0.8);
+  map.setFilter('surveillance-points', null);
+  map.setPaintProperty('surveillance-points', 'circle-opacity', 0.8);
 
   // Show buffer zones
   map.setLayoutProperty('buffer-zones', 'visibility', 'visible');
@@ -416,6 +473,15 @@ function switchToExplorationView() {
   // Update toggle UI
   document.getElementById('toggle-btn').classList.add('toggle-active');
   document.getElementById('toggle-btn').classList.remove('toggle-inactive');
+
+  // Show reset view button
+  document.getElementById('reset-view-btn').style.display = 'block';
+
+  // Update title box content
+  const titleBox = document.querySelector('#title-box h1');
+  const subtitle = document.querySelector('#title-box .subtitle');
+  titleBox.textContent = "New York City's Digital Surveillance Landscape";
+  subtitle.textContent = "New York City's digital infrastructure gathers massive amounts of personal data. Beneath the promise of free public services, whistleblowers and privacy advocates have raised concerns about how \"free\" these public goods really are. Developed through public-private partnerships, these systems give private contractors varying levels of access to the data collected. This map shows where and what data is gathered when you use or move near these technologies.";
 }
 
 function switchToTimelineView() {
@@ -434,6 +500,7 @@ function switchToTimelineView() {
     }
   });
   map.setFilter('infra-points', ['<=', ['to-number', ['get', 'year']], activeYear]);
+  map.setFilter('surveillance-points', ['<=', ['to-number', ['get', 'year']], activeYear]);
 
   // Hide buffer zones
   map.setLayoutProperty('buffer-zones', 'visibility', 'none');
@@ -459,13 +526,22 @@ function switchToTimelineView() {
   // Update toggle UI
   document.getElementById('toggle-btn').classList.remove('toggle-active');
   document.getElementById('toggle-btn').classList.add('toggle-inactive');
+
+  // Hide reset view button
+  document.getElementById('reset-view-btn').style.display = 'none';
+
+  // Restore original title box content
+  const titleBox = document.querySelector('#title-box h1');
+  const subtitle = document.querySelector('#title-box .subtitle');
+  titleBox.textContent = "New York City's Digital Infrastructure over time";
+  subtitle.textContent = "This map tracks the evolution of NYC's digital infrastructure through the introduction of Wifi, LinkNYC, Citi Bike, and OMNY and TAPP payments, and contextualizes them with the municipal and state introduction of apps, websites, programs, policies and laws.";
 }
 
 // --- EXPLORATION VIEW HOVER SYSTEM ---
 function handleExplorationHover(e) {
-  // Priority 1: Check if hovering over point center
+  // Priority 1: Check if hovering over point center (both layers)
   const pointFeatures = map.queryRenderedFeatures(e.point, {
-    layers: ['infra-points']
+    layers: ['infra-points', 'surveillance-points']
   });
 
   if (pointFeatures.length > 0) {
@@ -515,7 +591,9 @@ function showPointTooltip(feature) {
     `;
   }
 
-  if (props.year) {
+  // Only show year if NOT a CCTV camera
+  const isCCTV = props.System === 'CCTV Camera' || props.System === 'CCTV Surveillance';
+  if (props.year && !isCCTV) {
     html += `
       <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: rgba(255, 255, 255, 0.6);">
         Year: ${props.year}
@@ -564,5 +642,16 @@ document.getElementById('toggle-btn').addEventListener('click', () => {
   } else {
     switchToTimelineView();
   }
+});
+
+// --- RESET VIEW BUTTON ---
+document.getElementById('reset-view-btn').addEventListener('click', () => {
+  // Fly back to original NYC view
+  map.flyTo({
+    center: [-73.985, 40.75],
+    zoom: 11,
+    duration: 1500,
+    essential: true
+  });
 });
 
