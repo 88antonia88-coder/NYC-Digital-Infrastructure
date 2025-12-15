@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>NYC Digital Architecture Over Time</title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Urbanist:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<div id="title-box">
+  <h1>New York City's Digital Infrastructure over time</h1>
+  <p class="subtitle">This map tracks the evolution of NYC's digital infrastructure through the introduction of Wifi, LinkNYC, Citi Bike, and OMNY and TAPP payments, and contextualizes them with the municipal and state introduction of apps, websites, programs, policies and laws.</p>
+  
+  <div id="legend">
+    <h3>Digital Infrastructure</h3>
+    <div class="legend-item">
+      <span class="legend-color" style="background-color: #434db9;"></span>
+      <span class="legend-label">Wifi Hotspots</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color" style="background-color: #3e9cfe;"></span>
+      <span class="legend-label">LinkNYC</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color" style="background-color: #48f882;"></span>
+      <span class="legend-label">Citi Bike</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color" style="background-color: #e2dc38;"></span>
+      <span class="legend-label">OMNY</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color" style="background-color: #ef5911;"></span>
+      <span class="legend-label">TAPP</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color" style="background-color: #6d0914;"></span>
+      <span class="legend-label">CCTV Cameras</span>
+    </div>
+  </div>
+  
+  <p class="sources">Sources: NYC Open Data, Citibike, Amnesty International. Note: CCTV Camera's installation date are randomized and not accurate. </p>
+</div>
+
+<!-- View Toggle -->
+<div id="view-toggle">
+  <button id="toggle-btn" class="toggle-inactive">
+    <span class="view-label timeline-label">Timeline View</span>
+    <div class="toggle-switch">
+      <div class="toggle-slider"></div>
+    </div>
+    <span class="view-label exploration-label">Exploration View</span>
+  </button>
+  <button id="reset-view-btn" class="reset-view-btn" style="display: none;">
+    Reset View
+  </button>
+</div>
+
+<!-- Scroll track for years and events -->
+<div id="scroll-track"></div>
+
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.js"></script>
+<script src="app.js?v=1765750430"></script>
+
+</body>
+</html>
