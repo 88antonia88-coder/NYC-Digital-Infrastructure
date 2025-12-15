@@ -373,65 +373,69 @@ html, body {
   transform: translateY(-2px);
 }
 
-/* Download Button */
-.download-btn {
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(10px);
-  padding: 10px 18px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+/* Download Button in Title Box */
+#title-box .download-btn {
+  margin-top: 12px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 14px;
+  border-radius: 6px;
   cursor: pointer;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.75rem;
-  color: white;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.8);
   text-align: center;
   transition: all 0.3s ease;
   position: relative;
 }
 
-.download-btn:hover {
-  background: rgba(0, 0, 0, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
+#title-box .download-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Download Menu */
-.download-menu {
+/* Download Menu in Title Box */
+#title-box .download-menu {
   position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 8px;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 8px;
+  width: 100%;
   background: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(10px);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px;
   display: none;
   flex-direction: column;
-  gap: 6px;
-  min-width: 160px;
+  gap: 4px;
   z-index: 100;
 }
 
-.download-menu.show {
+#title-box .download-menu.show {
   display: flex;
 }
 
-.download-option {
-  background: transparent;
+#title-box .download-option {
+  background: rgba(255, 255, 255, 0.05);
   border: none;
-  padding: 8px 12px;
+  padding: 10px 12px;
   border-radius: 4px;
   cursor: pointer;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 0.7rem;
-  color: white;
+  color: rgba(255, 255, 255, 0.8);
   text-align: left;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.download-option:hover {
-  background: rgba(255, 255, 255, 0.1);
+#title-box .download-option:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Buffer Tooltip Styling */
