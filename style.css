@@ -30,7 +30,7 @@ html, body {
 #title-box h1 {
   margin: 0 0 15px 0;
   font-family: 'Urbanist', sans-serif;
-  font-size: 2 rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: white;
   line-height: 1.2;
@@ -39,7 +39,7 @@ html, body {
 #title-box .subtitle {
   margin: 0 0 20px 0;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 1.2rem;
+  font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.9);
   line-height: 1.5;
 }
@@ -47,7 +47,7 @@ html, body {
 #title-box .sources {
   margin: 15px 0 0 0;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 1.0rem;
+  font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.6);
   font-style: italic;
 }
@@ -62,7 +62,7 @@ html, body {
 #legend h3 {
   margin: 0 0 15px 0;
   font-family: 'Urbanist', sans-serif;
-  font-size: 1.2rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: white;
 }
@@ -87,7 +87,7 @@ html, body {
 
 .legend-label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 1rem;
+  font-size: 0.8rem;
   color: white;
 }
 
@@ -121,7 +121,7 @@ html, body {
 
 .year-display {
   font-family: 'Urbanist', sans-serif;
-  font-size: 10rem;
+  font-size: 6rem;
   font-weight: 800;
   color: white;
   opacity: 0.15;
@@ -212,7 +212,7 @@ html, body {
 
 .event-name {
   font-family: 'Urbanist', sans-serif;
-  font-size: 2rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: white;
   margin: 0;
@@ -222,9 +222,9 @@ html, body {
 
 .event-tag {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.8rem;
+  font-size: 0.65rem;
   color: rgba(255, 255, 255, 0.9);
-  padding: 6px 14px;
+  padding: 4px 10px;
   background: rgba(62, 156, 254, 0.25);
   border-radius: 4px;
   text-transform: uppercase;
@@ -239,7 +239,7 @@ html, body {
 
 .event-meta-line {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.8);
   margin: 5px 0;
   line-height: 1.5;
@@ -253,7 +253,7 @@ html, body {
 
 .event-description {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.85);
   margin: 12px 0 0 0;
   line-height: 1.6;
