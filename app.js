@@ -675,7 +675,7 @@ document.addEventListener('click', (e) => {
 
 // Handle download options
 downloadOptions.forEach(option => {
-  option.addEventListener('click', (e) => {
+  option.addEventListener('click', (e) => { 
     e.stopPropagation();
     const type = option.dataset.type;
 
