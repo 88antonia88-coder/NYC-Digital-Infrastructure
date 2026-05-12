@@ -31,7 +31,7 @@ map.on('load', () => {
   // Add the GeoJSON source
   map.addSource('digitalInfra', {
     type: 'geojson',
-    data: 'all_digInf.geojson'
+    data: 'all_diginf.geojson'
   });
 
   // Add buffer zones layer first (initially hidden, renders behind everything)
@@ -175,31 +175,53 @@ map.on('load', () => {
   map.setFilter('infra-points', ['<=', ['to-number', ['get', 'year']], 0]);
   map.setFilter('surveillance-points', ['<=', ['to-number', ['get', 'year']], 0]);
 
-  // Change cursor to pointer when hovering over points
+  // Change cursor to pointer when hovering over points (both layers)
   const handlePointHover = (e) => {
     map.getCanvas().style.cursor = 'pointer';
+
     const feature = e.features[0];
     const coordinates = feature.geometry.coordinates.slice();
-    const props = feature.properties;
+    const properties = feature.properties;
 
-    const row = (label, val) => !val ? '' : `
-      <div style="margin-bottom: 16px;">
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 1.0rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px;">${label}</div>
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 1.4rem; color: rgba(255,255,255,0.92); line-height: 1.3;">${val}</div>
-      </div>`;
+    let tooltipHTML = `
+      <div style="font-family: 'Urbanist', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 5px; color: white;">
+        ${properties.System || 'Unknown System'}
+      </div>
+    `;
 
-    const html = `<div>
-      <div style="font-family: 'Urbanist', sans-serif; font-weight: 700; font-size: 1.8rem; color: white; line-height: 1.2; margin-bottom: 20px;">${props.System || 'Unknown'}</div>
-      ${row('Location', props['Station Name'])}
-      ${row('Type', props.Type)}
-      ${row('Year Installed', props.year)}
-    </div>`;
+    if (properties['Station Name']) {
+      tooltipHTML += `
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: rgba(255, 255, 255, 0.8); margin-bottom: 3px;">
+          ${properties['Station Name']}
+        </div>
+      `;
+    }
+
+    if (properties.Type) {
+      tooltipHTML += `
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 3px;">
+          Type: ${properties.Type}
+        </div>
+      `;
+    }
+
+    // Only show year if NOT a CCTV camera
+    const isCCTV = properties.System === 'CCTV Camera' || properties.System === 'CCTV Surveillance';
+    if (properties.year && !isCCTV) {
+      tooltipHTML += `
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: rgba(255, 255, 255, 0.6);">
+          Year: ${properties.year}
+        </div>
+      `;
+    }
 
     while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
       coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
     }
-    popup.setLngLat(coordinates).setHTML(html).addTo(map);
+
+    popup.setLngLat(coordinates).setHTML(tooltipHTML).addTo(map);
   };
+
   const handlePointLeave = () => {
     map.getCanvas().style.cursor = '';
     popup.remove();
@@ -207,6 +229,8 @@ map.on('load', () => {
 
   map.on('mouseenter', 'infra-points', handlePointHover);
   map.on('mouseleave', 'infra-points', handlePointLeave);
+  map.on('mouseenter', 'surveillance-points', handlePointHover);
+  map.on('mouseleave', 'surveillance-points', handlePointLeave);
 
   updateYearDisplay(2000);
 });
@@ -515,18 +539,29 @@ function switchToTimelineView() {
 
 // --- EXPLORATION VIEW HOVER SYSTEM ---
 function handleExplorationHover(e) {
-  const pointFeatures = map.queryRenderedFeatures(e.point, { layers: ['infra-points'] });
+  // Priority 1: Check if hovering over point center (both layers)
+  const pointFeatures = map.queryRenderedFeatures(e.point, {
+    layers: ['infra-points', 'surveillance-points']
+  });
+
   if (pointFeatures.length > 0) {
     showPointTooltip(pointFeatures[0]);
     map.getCanvas().style.cursor = 'pointer';
     return;
   }
-  const bufferFeatures = map.queryRenderedFeatures(e.point, { layers: ['buffer-zones'] });
+
+  // Priority 2: Check if hovering over buffer zone
+  const bufferFeatures = map.queryRenderedFeatures(e.point, {
+    layers: ['buffer-zones']
+  });
+
   if (bufferFeatures.length > 0) {
-    showPointTooltip(bufferFeatures[0]);
-    map.getCanvas().style.cursor = 'pointer';
+    showBufferTooltip(bufferFeatures[0]);
+    map.getCanvas().style.cursor = 'help';
     return;
   }
+
+  // No hover
   popup.remove();
   map.getCanvas().style.cursor = '';
 }
@@ -534,41 +569,63 @@ function handleExplorationHover(e) {
 function showPointTooltip(feature) {
   const props = feature.properties;
 
-  const row = (label, val) => !val ? '' : `
-    <div style="margin-bottom: 16px;">
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 1.0rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px;">${label}</div>
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 1.4rem; color: rgba(255,255,255,0.92); line-height: 1.3;">${val}</div>
-    </div>`;
-
-  const divider = '<div style="border-top: 1px solid rgba(255,255,255,0.15); margin: 18px 0 16px;"></div>';
-
-  const radius = props['Average Radius of Connection (ft)'];
-  const dataCollected = props['Data Collected'];
-  const publicPartner = props['Public Partner'];
-  const privatePartner = props['Private Partner'];
-  const access = [publicPartner, privatePartner].filter(Boolean).join(', ');
-
-  let html = `<div>
-    <div style="font-family: 'Urbanist', sans-serif; font-weight: 700; font-size: 1.8rem; color: white; line-height: 1.2; margin-bottom: 20px;">${props.System || 'Unknown'}</div>
-    ${row('Location', props['Station Name'])}
-    ${row('Type', props.Type)}
-    ${row('Year Installed', props.year)}
+  let html = `
+    <div style="font-family: 'Urbanist', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 5px; color: white;">
+      ${props.System || 'Unknown System'}
+    </div>
   `;
 
-  if (radius || dataCollected || access) {
-    html += divider;
-    html += `<div style="font-family: 'IBM Plex Mono', monospace; font-size: 1.0rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 16px;">Data Collection Zone</div>`;
-    html += row('Coverage Radius', radius ? radius + ' ft' : null);
-    html += row('Data Collected', dataCollected);
-    html += row('Who Has Access', access || null);
+  if (props['Station Name']) {
+    html += `
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: rgba(255, 255, 255, 0.8); margin-bottom: 3px;">
+        ${props['Station Name']}
+      </div>
+    `;
   }
 
-  html += '</div>';
+  if (props.Type) {
+    html += `
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 3px;">
+        Type: ${props.Type}
+      </div>
+    `;
+  }
+
+  // Only show year if NOT a CCTV camera
+  const isCCTV = props.System === 'CCTV Camera' || props.System === 'CCTV Surveillance';
+  if (props.year && !isCCTV) {
+    html += `
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: rgba(255, 255, 255, 0.6);">
+        Year: ${props.year}
+      </div>
+    `;
+  }
+
   popup.setLngLat(feature.geometry.coordinates).setHTML(html).addTo(map);
 }
 
 function showBufferTooltip(feature) {
-  showPointTooltip(feature);
+  const props = feature.properties;
+
+  const radius = props['Average Radius of Connection (ft)'] || 'Unknown';
+  const dataCollected = props['Data Collected'] || 'No data collection info available';
+
+  let html = `
+    <div class="buffer-tooltip">
+      <div class="tooltip-header" style="font-family: 'Urbanist', sans-serif; font-weight: 700; font-size: 0.85rem; margin-bottom: 8px; color: rgba(255, 255, 255, 0.9);">
+         Data Collection Zone
+      </div>
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 8px;">
+        Coverage Radius: ${radius} ft
+      </div>
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: rgba(255, 255, 255, 0.6); line-height: 1.4; border-top: 1px solid rgba(255, 255, 255, 0.2); padding-top: 8px;">
+        <strong style="color: rgba(255, 255, 255, 0.8);">Data Collected:</strong><br/>
+        ${dataCollected}
+      </div>
+    </div>
+  `;
+
+  popup.setLngLat(feature.geometry.coordinates).setHTML(html).addTo(map);
 }
 
 function handleBufferLeave() {
@@ -635,7 +692,7 @@ downloadOptions.forEach(option => {
 function downloadGeoJSON() {
   // Create a link element and trigger download
   const link = document.createElement('a');
-  link.href = 'all_digInf.geojson';
+  link.href = 'all_diginf.geojson';
   link.download = 'nyc_digital_infrastructure.geojson';
   document.body.appendChild(link);
   link.click();
