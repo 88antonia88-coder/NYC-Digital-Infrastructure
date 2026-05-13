@@ -1,80 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>NYC Digital Architecture Over Time</title>
-  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.css" rel="stylesheet">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Urbanist:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinkNYC & Arrests</title>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
 
-<div id="map"></div>
-
-<div id="title-box">
-  <h1>New York City's Digital Infrastructure over time</h1>
-  <p class="subtitle">This map tracks the evolution of NYC's digital infrastructure through the introduction of Wifi, LinkNYC, Citi Bike, and OMNY and TAPP payments, and contextualizes them with the municipal and state introduction of apps, websites, programs, policies and laws.</p>
-  
-  <div id="legend">
-    <h3>Digital Infrastructure</h3>
-    <div class="legend-item">
-      <span class="legend-color" style="background-color: #434db9;"></span>
-      <span class="legend-label">Wifi Hotspots</span>
-    </div>
-    <div class="legend-item">
-      <span class="legend-color" style="background-color: #3e9cfe;"></span>
-      <span class="legend-label">LinkNYC</span>
-    </div>
-    <div class="legend-item">
-      <span class="legend-color" style="background-color: #48f882;"></span>
-      <span class="legend-label">Citi Bike</span>
-    </div>
-    <div class="legend-item">
-      <span class="legend-color" style="background-color: #e2dc38;"></span>
-      <span class="legend-label">OMNY</span>
-    </div>
-    <div class="legend-item">
-      <span class="legend-color" style="background-color: #ef5911;"></span>
-      <span class="legend-label">TAPP</span>
+  <div id="header">
+    <div>
+      <h1>LinkNYC & Arrests in NYC</h1>
+      <p>Arrests within 150ft of each LinkNYC kiosk — before and after activation</p>
     </div>
   </div>
-  
-  <p class="sources">Sources: NYC Open Data, Citibike, Amnesty International. Note: CCTV Camera's installation date are randomized and not accurate. </p>
 
-  <div style="position: relative;">
-    <button id="download-btn" class="download-btn">
-      Download Data
-    </button>
-    <div id="download-menu" class="download-menu">
-      <button class="download-option" data-type="geojson">GeoJSON</button>
-      <button class="download-option" data-type="csv">CSV (Timeline)</button>
+  <div id="map"></div>
+
+  <div id="controls">
+    <h3>View</h3>
+    <div id="toggle-buttons">
+      <button class="active" onclick="showLayer('change', this)">% Change Before vs After</button>
+      <button onclick="showLayer('before', this)">Before Activation</button>
+      <button onclick="showLayer('after', this)">After Activation</button>
+    </div>
+
+    <h3>Legend</h3>
+    <div id="legend"></div>
+
+    <div id="stats">
+      <div class="stat">
+        <div class="stat-value">2,247</div>
+        <div class="stat-label">LinkNYC kiosks mapped</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">375k+</div>
+        <div class="stat-label">arrests within 150ft (2014–2025)</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">13%</div>
+        <div class="stat-label">of all NYC arrests within 150ft of a kiosk</div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- View Toggle -->
-<div id="view-toggle">
-  <button id="toggle-btn" class="toggle-inactive">
-    <span class="view-label timeline-label">Timeline View</span>
-    <div class="toggle-switch">
-      <div class="toggle-slider"></div>
+  <!-- Chart panel bottom right -->
+  <div id="chart-panel">
+    <div class="chart-title">NYC ARREST TRENDS — CITYWIDE VS NEAR LINKNYC (2014–2025)</div>
+    <canvas id="trendChart"></canvas>
+    <div id="chart-expand-hint">Click to expand ↗</div>
+  </div>
+
+  <!-- Modal -->
+  <div id="chart-modal">
+    <div id="chart-modal-inner">
+      <div id="chart-modal-header">
+        <span>NYC ARREST TRENDS — CITYWIDE VS NEAR LINKNYC (2014–2025)</span>
+        <button id="chart-close" onclick="closeChart()">✕</button>
+      </div>
+      <div id="chart-modal-subtitle">
+        Solid lines = total arrests (left axis) — Dashed lines = arrests per kiosk (right axis)
+      </div>
+      <canvas id="trendChartLarge"></canvas>
     </div>
-    <span class="view-label exploration-label">Exploration View</span>
-  </button>
-  <button id="reset-view-btn" class="reset-view-btn" style="display: none;">
-    Reset View
-  </button>
-</div>
+  </div>
 
-<!-- Scroll track for years and events -->
-<div id="scroll-track"></div>
-
-<script src="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.js"></script>
-<script src="app.js?v=1734390203"></script>
+  <!-- map.js loaded ONCE at the bottom -->
+  <script src="map.js"></script>
 
 </body>
 </html>
