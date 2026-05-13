@@ -31,7 +31,7 @@ map.on('load', () => {
   // Add the GeoJSON source
   map.addSource('digitalInfra', {
     type: 'geojson',
-    data: 'all_digInf.geojson'
+    data: 'all_diginf.geojson'
   });
 
   // Add buffer zones layer first (initially hidden, renders behind everything)
@@ -592,7 +592,7 @@ downloadOptions.forEach(option => {
 function downloadGeoJSON() {
   // Create a link element and trigger download
   const link = document.createElement('a');
-  link.href = 'all_digInf.geojson';
+  link.href = 'all_diginf.geojson';
   link.download = 'nyc_digital_infrastructure.geojson';
   document.body.appendChild(link);
   link.click();
