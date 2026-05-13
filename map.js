@@ -220,7 +220,7 @@ function loadChart() {
     const after = beforeAfterData.map(d => d.after);
 
     const ctx = document.getElementById('trendChart').getContext('2d');
-    new Chart(ctx, buildChartConfig(years, citywide, buffer, before, after, 9));
+    new Chart(ctx, buildChartConfig(years, citywide, buffer, before, after, 13));
   }).catch(err => console.error('Chart data error:', err));
 }
 
@@ -235,7 +235,7 @@ function renderLargeChart() {
   const after = beforeAfterData.map(d => d.after);
 
   const ctx = document.getElementById('trendChartLarge').getContext('2d');
-  largeChartInstance = new Chart(ctx, buildChartConfig(years, citywide, buffer, before, after, 11));
+  largeChartInstance = new Chart(ctx, buildChartConfig(years, citywide, buffer, before, after, 15));
 }
 
 // ---- SHARED CHART CONFIG ----
