@@ -28,31 +28,7 @@
       height: 100vh;
     }
 
-    /* ---- BACK BUTTON ---- */
-    #back-btn {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 10;
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 8px;
-      padding: 12px 18px;
-      color: rgba(255,255,255,0.7);
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 1.0rem;
-      cursor: pointer;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
-    }
-    #back-btn:hover {
-      border-color: rgba(255,255,255,0.3);
-      color: white;
-    }
+
 
     /* ---- TITLE BOX ---- */
     #title-box {
@@ -354,7 +330,7 @@
   <div id="map"></div>
 
   <!-- Back button -->
-  <a href="index.html" id="back-btn">← Back to Surveillance Map</a>
+  <a href="index.html" id="back-btn" style="position:fixed;top:20px;right:20px;z-index:1000;background:rgba(0,0,0,0.85);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:14px 20px;color:white;font-family:IBM Plex Mono,monospace;font-size:1.0rem;cursor:pointer;text-decoration:none;display:block;">← Back to Surveillance Map</a>
 
   <!-- Title / controls box -->
   <div id="title-box">
