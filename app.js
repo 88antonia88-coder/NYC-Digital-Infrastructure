@@ -31,7 +31,7 @@ map.on('load', () => {
   // Add the GeoJSON source
   map.addSource('digitalInfra', {
     type: 'geojson',
-    data: 'all_diginf.geojson'
+    data: 'all_digInf.geojson'
   });
 
   // Add buffer zones layer first (initially hidden, renders behind everything)
@@ -459,13 +459,12 @@ function switchToExplorationView() {
   titleBox.textContent = "New York City's Digital Surveillance Landscape";
   subtitle.textContent = "New York City's digital infrastructure gathers massive amounts of personal data. Beneath the promise of free public services, whistleblowers and privacy advocates have raised concerns about how \"free\" these public goods really are. Developed through public-private partnerships, these systems give private contractors varying levels of access to the data collected. This map shows where and what data is gathered when you use or move near these technologies.";
 
-  // Show impact button
   const existing = document.getElementById('impact-btn');
   if (!existing) {
     const btn = document.createElement('a');
     btn.id = 'impact-btn';
     btn.href = 'arrests.html';
-    btn.textContent = 'What is the impact of surveillance? →';
+    btn.textContent = 'Why should I care about surveillance? →';
     document.getElementById('title-box').appendChild(btn);
   } else {
     existing.style.display = 'block';
@@ -524,7 +523,6 @@ function switchToTimelineView() {
   titleBox.textContent = "New York City's Digital Infrastructure over time";
   subtitle.textContent = "This map tracks the evolution of NYC's digital infrastructure through the introduction of Wifi, LinkNYC, Citi Bike, and OMNY and TAPP payments, and contextualizes them with the municipal and state introduction of apps, websites, programs, policies and laws.";
 
-  // Hide impact button
   const impactBtn = document.getElementById('impact-btn');
   if (impactBtn) impactBtn.style.display = 'none';
 }
@@ -651,7 +649,7 @@ downloadOptions.forEach(option => {
 function downloadGeoJSON() {
   // Create a link element and trigger download
   const link = document.createElement('a');
-  link.href = 'all_diginf.geojson';
+  link.href = 'all_digInf.geojson';
   link.download = 'nyc_digital_infrastructure.geojson';
   document.body.appendChild(link);
   link.click();
