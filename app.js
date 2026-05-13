@@ -31,7 +31,7 @@ map.on('load', () => {
   // Add the GeoJSON source
   map.addSource('digitalInfra', {
     type: 'geojson',
-    data: 'all_digInf.geojson'
+    data: 'all_diginf.geojson'
   });
 
   // Add buffer zones layer first (initially hidden, renders behind everything)
