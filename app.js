@@ -31,7 +31,7 @@ map.on('load', () => {
   // Add the GeoJSON source
   map.addSource('digitalInfra', {
     type: 'geojson',
-    data: 'all_diginf.geojson'
+    data: 'all_digInf.geojson'
   });
 
   // Add buffer zones layer first (initially hidden, renders behind everything)
@@ -83,11 +83,50 @@ map.on('load', () => {
     }
   });
 
+  // Add surveillance cameras layer (behind other infra points)
+  map.addLayer({
+    id: 'surveillance-points',
+    type: 'circle',
+    source: 'digitalInfra',
+    filter: [
+      'any',
+      ['==', ['get', 'System'], 'CCTV Camera'],
+      ['==', ['get', 'System'], 'CCTV Surveillance']
+    ],
+    paint: {
+      'circle-radius': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        10, 1.5,
+        14, 3,
+        18, 5
+      ],
+      "circle-color": "#ff2222",
+      "circle-opacity": 0.9,
+      "circle-stroke-width": [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        10, 0.5,
+        14, 1,
+        18, 1.5
+      ],
+      "circle-stroke-color": "#ff6666",
+      "circle-stroke-opacity": 0.9
+    }
+  });
+
   // Add other infrastructure points layer (on top)
   map.addLayer({
     id: 'infra-points',
     type: 'circle',
     source: 'digitalInfra',
+    filter: [
+      'all',
+      ['!=', ['get', 'System'], 'CCTV Camera'],
+      ['!=', ['get', 'System'], 'CCTV Surveillance']
+    ],
     paint: {
       'circle-radius': [
         'interpolate',
@@ -134,6 +173,7 @@ map.on('load', () => {
 
   // Start with no points visible
   map.setFilter('infra-points', ['<=', ['to-number', ['get', 'year']], 0]);
+  map.setFilter('surveillance-points', ['<=', ['to-number', ['get', 'year']], 0]);
 
   // Change cursor to pointer when hovering over points
   const handlePointHover = (e) => {
@@ -382,6 +422,8 @@ function switchToExplorationView() {
   // Remove year filter - show all points
   map.setFilter('infra-points', null);
   map.setPaintProperty('infra-points', 'circle-opacity', 0.8);
+  map.setFilter('surveillance-points', null);
+  map.setPaintProperty('surveillance-points', 'circle-opacity', 0.8);
 
   // Show buffer zones
   map.setLayoutProperty('buffer-zones', 'visibility', 'visible');
@@ -416,6 +458,18 @@ function switchToExplorationView() {
   const subtitle = document.querySelector('#title-box .subtitle');
   titleBox.textContent = "New York City's Digital Surveillance Landscape";
   subtitle.textContent = "New York City's digital infrastructure gathers massive amounts of personal data. Beneath the promise of free public services, whistleblowers and privacy advocates have raised concerns about how \"free\" these public goods really are. Developed through public-private partnerships, these systems give private contractors varying levels of access to the data collected. This map shows where and what data is gathered when you use or move near these technologies.";
+
+  // Show impact button
+  const existing = document.getElementById('impact-btn');
+  if (!existing) {
+    const btn = document.createElement('a');
+    btn.id = 'impact-btn';
+    btn.href = 'arrests.html';
+    btn.textContent = 'What is the impact of surveillance? →';
+    document.getElementById('title-box').appendChild(btn);
+  } else {
+    existing.style.display = 'block';
+  }
 }
 
 function switchToTimelineView() {
@@ -434,6 +488,7 @@ function switchToTimelineView() {
     }
   });
   map.setFilter('infra-points', ['<=', ['to-number', ['get', 'year']], activeYear]);
+  map.setFilter('surveillance-points', ['<=', ['to-number', ['get', 'year']], activeYear]);
 
   // Hide buffer zones
   map.setLayoutProperty('buffer-zones', 'visibility', 'none');
@@ -468,6 +523,10 @@ function switchToTimelineView() {
   const subtitle = document.querySelector('#title-box .subtitle');
   titleBox.textContent = "New York City's Digital Infrastructure over time";
   subtitle.textContent = "This map tracks the evolution of NYC's digital infrastructure through the introduction of Wifi, LinkNYC, Citi Bike, and OMNY and TAPP payments, and contextualizes them with the municipal and state introduction of apps, websites, programs, policies and laws.";
+
+  // Hide impact button
+  const impactBtn = document.getElementById('impact-btn');
+  if (impactBtn) impactBtn.style.display = 'none';
 }
 
 // --- EXPLORATION VIEW HOVER SYSTEM ---
@@ -592,7 +651,7 @@ downloadOptions.forEach(option => {
 function downloadGeoJSON() {
   // Create a link element and trigger download
   const link = document.createElement('a');
-  link.href = 'all_diginf.geojson';
+  link.href = 'all_digInf.geojson';
   link.download = 'nyc_digital_infrastructure.geojson';
   document.body.appendChild(link);
   link.click();

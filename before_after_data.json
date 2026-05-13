@@ -1,0 +1,60 @@
+[
+  {
+    "arrest_year": 2014,
+    "before": 29.2
+  },
+  {
+    "arrest_year": 2015,
+    "before": 25.9
+  },
+  {
+    "arrest_year": 2016,
+    "before": 19,
+    "after": 13.8
+  },
+  {
+    "arrest_year": 2017,
+    "before": 13.8,
+    "after": 16.9
+  },
+  {
+    "arrest_year": 2018,
+    "before": 9.6,
+    "after": 15
+  },
+  {
+    "arrest_year": 2019,
+    "before": 10.3,
+    "after": 12.9
+  },
+  {
+    "arrest_year": 2020,
+    "before": 6.5,
+    "after": 8.5
+  },
+  {
+    "arrest_year": 2021,
+    "before": 6.1,
+    "after": 10.4
+  },
+  {
+    "arrest_year": 2022,
+    "before": 5.5,
+    "after": 11.3
+  },
+  {
+    "arrest_year": 2023,
+    "before": 6.3,
+    "after": 14.5
+  },
+  {
+    "arrest_year": 2024,
+    "before": 4.8,
+    "after": 19.3
+  },
+  {
+    "arrest_year": 2025,
+    "before": 5.4,
+    "after": 17.6
+  }
+]

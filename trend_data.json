@@ -1,0 +1,74 @@
+[
+  {
+    "arrest_year": 2014,
+    "total_citywide_arrests": 387727,
+    "arrests_in_buffer": 61780,
+    "pct_in_buffer": 15.9
+  },
+  {
+    "arrest_year": 2015,
+    "total_citywide_arrests": 339470,
+    "arrests_in_buffer": 54011,
+    "pct_in_buffer": 15.9
+  },
+  {
+    "arrest_year": 2016,
+    "total_citywide_arrests": 314864,
+    "arrests_in_buffer": 44811,
+    "pct_in_buffer": 14.2
+  },
+  {
+    "arrest_year": 2017,
+    "total_citywide_arrests": 286225,
+    "arrests_in_buffer": 38212,
+    "pct_in_buffer": 13.4
+  },
+  {
+    "arrest_year": 2018,
+    "total_citywide_arrests": 246773,
+    "arrests_in_buffer": 30609,
+    "pct_in_buffer": 12.4
+  },
+  {
+    "arrest_year": 2019,
+    "total_citywide_arrests": 214617,
+    "arrests_in_buffer": 25035,
+    "pct_in_buffer": 11.7
+  },
+  {
+    "arrest_year": 2020,
+    "total_citywide_arrests": 140413,
+    "arrests_in_buffer": 15016,
+    "pct_in_buffer": 10.7
+  },
+  {
+    "arrest_year": 2021,
+    "total_citywide_arrests": 155507,
+    "arrests_in_buffer": 18087,
+    "pct_in_buffer": 11.6
+  },
+  {
+    "arrest_year": 2022,
+    "total_citywide_arrests": 189774,
+    "arrests_in_buffer": 20666,
+    "pct_in_buffer": 10.9
+  },
+  {
+    "arrest_year": 2023,
+    "total_citywide_arrests": 226871,
+    "arrests_in_buffer": 28223,
+    "pct_in_buffer": 12.4
+  },
+  {
+    "arrest_year": 2024,
+    "total_citywide_arrests": 260489,
+    "arrests_in_buffer": 37895,
+    "pct_in_buffer": 14.5
+  },
+  {
+    "arrest_year": 2025,
+    "total_citywide_arrests": 278953,
+    "arrests_in_buffer": 33101,
+    "pct_in_buffer": 11.9
+  }
+]

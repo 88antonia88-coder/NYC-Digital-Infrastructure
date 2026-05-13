@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What is the impact of surveillance?</title>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Urbanist:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'IBM Plex Mono', monospace;
+      background: #000;
+      color: white;
+    }
+
+    #map {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* ---- BACK BUTTON ---- */
+    #back-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 12px 18px;
+      color: rgba(255,255,255,0.7);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    #back-btn:hover {
+      border-color: rgba(255,255,255,0.3);
+      color: white;
+    }
+
+    /* ---- TITLE BOX ---- */
+    #title-box {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 420px;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 22px;
+      z-index: 10;
+    }
+
+    #title-box h1 {
+      font-family: 'Urbanist', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: white;
+      line-height: 1.2;
+      margin: 0 0 8px 0;
+    }
+
+    #title-box .subtitle {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.5;
+      margin: 0 0 20px 0;
+    }
+
+    /* ---- VIEW TOGGLE ---- */
+    #view-toggle {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    #view-toggle h3 {
+      font-family: 'Urbanist', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0 0 6px 0;
+    }
+
+    .view-btn {
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 10px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 0.75rem;
+      font-family: 'IBM Plex Mono', monospace;
+      transition: all 0.15s;
+    }
+
+    .view-btn.active {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .view-btn:hover:not(.active) {
+      border-color: rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.8);
+    }
+
+    /* ---- LEGEND ---- */
+    #legend-box h3 {
+      font-family: 'Urbanist', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0 0 10px 0;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-note {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.3);
+      margin-top: 8px;
+    }
+
+    /* ---- STATS ---- */
+    #stats {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-top: 16px;
+      margin-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .stat-value {
+      font-family: 'Urbanist', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: white;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.4);
+      margin-top: 3px;
+    }
+
+    /* ---- CHART PANEL ---- */
+    #chart-panel {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 380px;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 18px;
+      z-index: 10;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    #chart-panel:hover {
+      border-color: rgba(255,255,255,0.25);
+    }
+
+    #chart-title {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    #trendChart {
+      width: 100% !important;
+      height: 180px !important;
+    }
+
+    #chart-expand-hint {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      color: rgba(255,255,255,0.25);
+      text-align: right;
+      margin-top: 8px;
+    }
+
+    /* ---- MODAL ---- */
+    #chart-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.88);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #chart-modal.open {
+      display: flex;
+    }
+
+    #chart-modal-inner {
+      background: rgba(0,0,0,0.95);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 28px;
+      width: 820px;
+      max-width: 92vw;
+      backdrop-filter: blur(10px);
+    }
+
+    #chart-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 4px;
+    }
+
+    #chart-modal-header span {
+      font-family: 'Urbanist', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    #chart-modal-subtitle {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 22px;
+    }
+
+    #chart-close {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.5);
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    #chart-close:hover {
+      border-color: white;
+      color: white;
+    }
+
+    #trendChartLarge {
+      width: 100% !important;
+      height: 340px !important;
+    }
+
+    /* ---- MAPBOX POPUP ---- */
+    .mapboxgl-popup-content {
+      background: rgba(0,0,0,0.95) !important;
+      color: white !important;
+      border: 1px solid rgba(255,255,255,0.15) !important;
+      border-radius: 8px !important;
+      font-family: 'IBM Plex Mono', monospace !important;
+      font-size: 0.75rem !important;
+      padding: 16px 18px !important;
+      line-height: 1.8 !important;
+      backdrop-filter: blur(10px) !important;
+    }
+
+    .mapboxgl-popup-tip {
+      border-top-color: rgba(0,0,0,0.95) !important;
+      border-bottom-color: rgba(0,0,0,0.95) !important;
+    }
+
+    .mapboxgl-popup-close-button {
+      display: none;
+    }
+
+    .popup-label {
+      color: rgba(255,255,255,0.4);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      display: block;
+      margin-bottom: 1px;
+    }
+
+    .popup-value {
+      color: white;
+      font-size: 0.82rem;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .popup-title {
+      font-family: 'Urbanist', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: white;
+      margin-bottom: 12px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="map"></div>
+
+  <!-- Back button -->
+  <a href="index.html" id="back-btn">← Back to Surveillance Map</a>
+
+  <!-- Title / controls box -->
+  <div id="title-box">
+    <h1>What is the impact of surveillance?</h1>
+    <p class="subtitle">Arrests within 150ft of each LinkNYC kiosk — before and after activation (2014–2025)</p>
+
+    <div id="view-toggle">
+      <h3>View</h3>
+      <button class="view-btn active" onclick="showLayer('change', this)">% Change before vs after</button>
+      <button class="view-btn" onclick="showLayer('before', this)">Before activation</button>
+      <button class="view-btn" onclick="showLayer('after', this)">After activation</button>
+    </div>
+
+    <div id="legend-box">
+      <h3>Legend</h3>
+      <div id="legend"></div>
+    </div>
+
+    <div id="stats">
+      <div>
+        <div class="stat-value">2,247</div>
+        <div class="stat-label">LinkNYC kiosks mapped</div>
+      </div>
+      <div>
+        <div class="stat-value">375k+</div>
+        <div class="stat-label">arrests within 150ft (2014–2025)</div>
+      </div>
+      <div>
+        <div class="stat-value">150 ft</div>
+        <div class="stat-label">buffer radius around each kiosk</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart panel -->
+  <div id="chart-panel">
+    <div id="chart-title">NYC Arrest Trends — Citywide vs Near LinkNYC (2014–2025)</div>
+    <canvas id="trendChart"></canvas>
+    <div id="chart-expand-hint">Click to expand ↗</div>
+  </div>
+
+  <!-- Modal -->
+  <div id="chart-modal">
+    <div id="chart-modal-inner">
+      <div id="chart-modal-header">
+        <span>NYC Arrest Trends — Citywide vs Near LinkNYC (2014–2025)</span>
+        <button id="chart-close" onclick="closeChart()">✕</button>
+      </div>
+      <div id="chart-modal-subtitle">
+        Solid lines = total arrests (left axis) — Dashed lines = arrests per kiosk (right axis)
+      </div>
+      <canvas id="trendChartLarge"></canvas>
+    </div>
+  </div>
+
+  <script src="map.js"></script>
+
+</body>
+</html>
