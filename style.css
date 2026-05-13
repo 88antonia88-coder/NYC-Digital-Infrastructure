@@ -440,10 +440,6 @@ html, body {
 }
 
 /* Buffer Tooltip Styling */
-.buffer-tooltip {
-  border-left: 3px dashed rgba(255, 255, 255, 0.5) !important;
-}
-
 .buffer-tooltip .tooltip-header {
   font-size: 1.36rem;
   margin-bottom: 8px;
