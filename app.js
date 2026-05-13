@@ -44,9 +44,9 @@ map.on('load', () => {
         'interpolate',
         ['linear'],
         ['zoom'],
-        10, ['/', ['get', 'Average Radius of Connection (ft)'], 30],
-        14, ['/', ['get', 'Average Radius of Connection (ft)'], 8],
-        18, ['/', ['get', 'Average Radius of Connection (ft)'], 2]
+        10, ['/', ['coalesce', ['get', 'Average Radius of Connection (ft)'], 150], 30],
+        14, ['/', ['coalesce', ['get', 'Average Radius of Connection (ft)'], 150], 8],
+        18, ['/', ['coalesce', ['get', 'Average Radius of Connection (ft)'], 150], 2]
       ],
       'circle-color': [
         "match",
@@ -465,6 +465,9 @@ function switchToExplorationView() {
     btn.id = 'impact-btn';
     btn.href = 'arrests.html';
     btn.textContent = 'Why should I care about surveillance? →';
+    btn.style.cssText = 'display:block;margin-top:16px;padding:12px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.2);border-radius:6px;color:white;font-family:IBM Plex Mono,monospace;font-size:0.75rem;text-decoration:none;text-align:center;cursor:pointer;';
+    btn.onmouseover = function(){ this.style.background='rgba(255,255,255,0.12)'; };
+    btn.onmouseout = function(){ this.style.background='rgba(255,255,255,0.06)'; };
     document.getElementById('title-box').appendChild(btn);
   } else {
     existing.style.display = 'block';
