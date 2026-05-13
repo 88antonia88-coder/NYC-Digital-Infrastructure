@@ -44,9 +44,9 @@ map.on('load', () => {
         'interpolate',
         ['linear'],
         ['zoom'],
-        10, ['/', ['coalesce', ['get', 'Average Radius of Connection (ft)'], 150], 30],
-        14, ['/', ['coalesce', ['get', 'Average Radius of Connection (ft)'], 150], 8],
-        18, ['/', ['coalesce', ['get', 'Average Radius of Connection (ft)'], 150], 2]
+        10, ['/', ['get', 'Average Radius of Connection (ft)'], 30],
+        14, ['/', ['get', 'Average Radius of Connection (ft)'], 8],
+        18, ['/', ['get', 'Average Radius of Connection (ft)'], 2]
       ],
       'circle-color': [
         "match",
@@ -458,6 +458,17 @@ function switchToExplorationView() {
   const subtitle = document.querySelector('#title-box .subtitle');
   titleBox.textContent = "New York City's Digital Surveillance Landscape";
   subtitle.textContent = "New York City's digital infrastructure gathers massive amounts of personal data. Beneath the promise of free public services, whistleblowers and privacy advocates have raised concerns about how \"free\" these public goods really are. Developed through public-private partnerships, these systems give private contractors varying levels of access to the data collected. This map shows where and what data is gathered when you use or move near these technologies.";
+
+  const existing = document.getElementById('impact-btn');
+  if (!existing) {
+    const btn = document.createElement('a');
+    btn.id = 'impact-btn';
+    btn.href = 'arrests.html';
+    btn.textContent = 'Why should I care about surveillance? →';
+    document.getElementById('title-box').appendChild(btn);
+  } else {
+    existing.style.display = 'block';
+  }
 }
 
 function switchToTimelineView() {
@@ -511,6 +522,9 @@ function switchToTimelineView() {
   const subtitle = document.querySelector('#title-box .subtitle');
   titleBox.textContent = "New York City's Digital Infrastructure over time";
   subtitle.textContent = "This map tracks the evolution of NYC's digital infrastructure through the introduction of Wifi, LinkNYC, Citi Bike, and OMNY and TAPP payments, and contextualizes them with the municipal and state introduction of apps, websites, programs, policies and laws.";
+
+  const impactBtn = document.getElementById('impact-btn');
+  if (impactBtn) impactBtn.style.display = 'none';
 }
 
 // --- EXPLORATION VIEW HOVER SYSTEM ---
