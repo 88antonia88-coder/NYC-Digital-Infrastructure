@@ -114,15 +114,11 @@ map.on('load', () => {
       new mapboxgl.Popup({ offset: 10 })
         .setLngLat(e.lngLat)
         .setHTML(`
-          <span class="popup-title">${p.borough || 'Unknown Borough'}</span>
-          <span class="popup-label">Activated</span>
-          <span class="popup-value">${p.activation_date || '—'}</span>
-          <span class="popup-label">Arrests Before</span>
-          <span class="popup-value">${p.Before ?? '—'}</span>
-          <span class="popup-label">Arrests After</span>
-          <span class="popup-value">${p.After ?? '—'}</span>
-          <span class="popup-label">vs Citywide Trend</span>
-          <span class="popup-value">${p.change_category || '—'}</span>
+          <strong>Borough</strong> ${p.borough}<br>
+          <strong>Activated</strong> ${p.activation_date}<br>
+          <strong>Arrests Before</strong> ${p.Before}<br>
+          <strong>Arrests After</strong> ${p.After}<br>
+          <strong>vs Citywide Trend</strong> ${p.change_category}
         `)
         .addTo(map);
     });
@@ -173,21 +169,21 @@ function updateLegend(layer) {
 
   if (layer === 'change') {
     legend.innerHTML = `
-      <div class="legend-item"><div class="legend-dot" style="background:#67001f"></div>High increase vs citywide</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#d6604d"></div>Moderate increase vs citywide</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#444"></div>Follows citywide trend</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#2166ac"></div>Decrease vs citywide</div>
-      <div class="legend-note">Circle size = total arrests</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#67001f"></div> High increase vs citywide trend</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#d6604d"></div> Moderate increase vs citywide</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#444"></div> Follows citywide trend</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#2166ac"></div> Decrease vs citywide trend</div>
+      <div style="color:#555; font-size:11px; margin-top:8px">Circle size = total arrests</div>
     `;
   } else if (layer === 'before') {
     legend.innerHTML = `
-      <div class="legend-item"><div class="legend-dot" style="background:#4FABD4"></div>Arrests before activation</div>
-      <div class="legend-note">Circle size = arrest count</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#4FABD4"></div> Arrests before activation</div>
+      <div style="color:#555; font-size:11px; margin-top:8px">Circle size = arrest count</div>
     `;
   } else {
     legend.innerHTML = `
-      <div class="legend-item"><div class="legend-dot" style="background:#E87722"></div>Arrests after activation</div>
-      <div class="legend-note">Circle size = arrest count</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#E87722"></div> Arrests after activation</div>
+      <div style="color:#555; font-size:11px; margin-top:8px">Circle size = arrest count</div>
     `;
   }
 }
@@ -250,48 +246,26 @@ function buildChartConfig(years, citywide, buffer, before, after, fontSize) {
       labels: years,
       datasets: [
         {
-          label: 'Citywide Arrests',
-          data: citywide,
-          borderColor: '#4FABD4',
-          backgroundColor: 'transparent',
-          borderWidth: 1.5,
-          pointRadius: 2,
-          tension: 0.3,
-          yAxisID: 'y1'
-        },
-        {
-          label: 'Near LinkNYC (After Activation)',
-          data: buffer,
-          borderColor: '#E87722',
-          backgroundColor: 'transparent',
-          borderWidth: 1.5,
-          pointRadius: 2,
-          tension: 0.3,
-          yAxisID: 'y1'
-        },
-        {
-          label: 'Per Kiosk — After',
+          label: 'After LinkNYC installed',
           data: after,
           borderColor: '#E87722',
-          backgroundColor: 'transparent',
-          borderWidth: 1.5,
-          borderDash: [4, 4],
-          pointRadius: 2,
+          backgroundColor: 'rgba(232, 119, 34, 0.08)',
+          borderWidth: 2.5,
+          pointRadius: 3,
           tension: 0.3,
-          yAxisID: 'y2',
-          spanGaps: true
+          spanGaps: true,
+          fill: false
         },
         {
-          label: 'Per Kiosk — Before',
+          label: 'Before LinkNYC installed',
           data: before,
           borderColor: '#4FABD4',
-          backgroundColor: 'transparent',
-          borderWidth: 1.5,
-          borderDash: [4, 4],
-          pointRadius: 2,
+          backgroundColor: 'rgba(79, 171, 212, 0.08)',
+          borderWidth: 2.5,
+          pointRadius: 3,
           tension: 0.3,
-          yAxisID: 'y2',
-          spanGaps: true
+          spanGaps: true,
+          fill: false
         }
       ]
     },
@@ -302,35 +276,53 @@ function buildChartConfig(years, citywide, buffer, before, after, fontSize) {
       plugins: {
         legend: {
           labels: {
-            color: '#888',
+            color: '#aaa',
             font: { size: fontSize },
-            boxWidth: 12
+            boxWidth: 14
+          }
+        },
+        annotation: {
+          annotations: {
+            box1: {
+              type: 'point',
+              xValue: '2024',
+              yValue: 19.3,
+              backgroundColor: 'rgba(232,119,34,0.2)',
+              borderColor: '#E87722',
+              borderWidth: 1,
+              radius: 6
+            },
+            label1: {
+              type: 'label',
+              xValue: '2022',
+              yValue: 21,
+              content: ['4.0x more arrests', 'after installation (2024)'],
+              color: 'rgba(255,255,255,0.7)',
+              font: { size: fontSize, family: 'IBM Plex Mono' },
+              textAlign: 'center'
+            }
           }
         }
       },
       scales: {
         x: {
-          ticks: { color: '#555', font: { size: fontSize - 1 } },
+          ticks: { color: '#666', font: { size: fontSize - 1 } },
           grid: { color: '#1a1a1a' }
         },
-        y1: {
+        y: {
           type: 'linear',
           position: 'left',
-          ticks: {
-            color: '#555',
-            font: { size: fontSize - 1 },
-            callback: val => val >= 1000 ? (val/1000).toFixed(0) + 'k' : val
-          },
-          grid: { color: '#1a1a1a' }
-        },
-        y2: {
-          type: 'linear',
-          position: 'right',
-          ticks: {
+          title: {
+            display: true,
+            text: 'Arrests per kiosk',
             color: '#555',
             font: { size: fontSize - 1 }
           },
-          grid: { drawOnChartArea: false }
+          ticks: {
+            color: '#666',
+            font: { size: fontSize - 1 }
+          },
+          grid: { color: '#1a1a1a' }
         }
       }
     }
