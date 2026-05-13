@@ -465,9 +465,9 @@ function switchToExplorationView() {
     btn.id = 'impact-btn';
     btn.href = 'arrests.html';
     btn.textContent = 'Why should I care about surveillance? →';
-    btn.style.cssText = 'display:block;margin-top:16px;padding:12px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.2);border-radius:6px;color:white;font-family:IBM Plex Mono,monospace;font-size:0.75rem;text-decoration:none;text-align:center;cursor:pointer;';
-    btn.onmouseover = function(){ this.style.background='rgba(255,255,255,0.12)'; };
-    btn.onmouseout = function(){ this.style.background='rgba(255,255,255,0.06)'; };
+    btn.style.cssText = 'display:block;margin-top:20px;padding:18px 20px;background:rgba(180,30,30,0.5);border:1px solid rgba(220,60,60,0.6);border-radius:8px;color:white;font-family:Urbanist,sans-serif;font-weight:700;font-size:1.3rem;text-decoration:none;text-align:center;cursor:pointer;line-height:1.3;';
+    btn.onmouseover = function(){ this.style.background='rgba(200,40,40,0.65)'; };
+    btn.onmouseout = function(){ this.style.background='rgba(180,30,30,0.5)'; };
     document.getElementById('title-box').appendChild(btn);
   } else {
     existing.style.display = 'block';
